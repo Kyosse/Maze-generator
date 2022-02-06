@@ -1,5 +1,4 @@
 from random import randint
-from re import X
 
 
 width = 10
