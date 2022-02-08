@@ -1,10 +1,6 @@
 from random import randint
 
 
-width = 10
-height = 10
-
-
 def maze_gen(width=4, height=4):
     """
     Fonctions de générateur de labyrinthe 
@@ -19,23 +15,23 @@ def maze_gen(width=4, height=4):
     for i in range(height):
         maze.append([])
         for j in range(width):
-            maze[i].append({'A':{'N':0,'S':0,'W':0,'E':0}}) # North,South,West,East correspond au endroit ou il y a des murs
+            maze[i].append({'A':{'N':1,'S':1,'W':1,'E':1}}) # North,South,West,East correspond au endroit ou il y a des murs
     
     # Placement du début            
     xStart = randint(0, height - 2) 
     yStart = randint(0, width - 2)
     if xStart > 0:
-        maze[xStart][0] = {'D':{'N':0,'S':0,'W':0,'E':0}}
+        maze[xStart][0] = {'D':{'N':1,'S':1,'W':0,'E':1}}
     else:
-        maze[0][yStart] = {'D':{'N':0,'S':0,'W':0,'E':0}}
+        maze[0][yStart] = {'D':{'N':0,'S':1,'W':1,'E':1}}
     # Placement du début            
     xStart = randint(1, height - 1) 
     yStart = randint(1, width - 1)
     if xStart > 0:
-        maze[xStart][width -1] = {'F':{'N':0,'S':0,'W':0,'E':0}}
+        maze[xStart][width -1] = {'F':{'N':1,'S':1,'W':1,'E':0}}
     else:
-        maze[height - 1][yStart] = {'F':{'N':0,'S':0,'W':0,'E':0}}
-    
+        maze[height - 1][yStart] = {'F':{'N':1,'S':0,'W':1,'E':1}}
+    print(*maze, sep='\n')
     
     
     return maze_keys(maze)
@@ -62,6 +58,11 @@ def maze_keys(maze):
             
     return maze_keys
     
+
+
+width = 10
+height = 10
+
     
     
 print(*maze_gen(width, height), sep='\n')
