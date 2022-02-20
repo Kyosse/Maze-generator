@@ -1,15 +1,43 @@
 from random import randint
 
 
-class Case:
-    def __init__(self, N=False, O=False, S=False, E=False):
+class Cell:
+    def __init__(self, value, N=False, O=False, S=False, E=False):
+        self.value = value
         self.nord = N
         self.ouest = O
         self.sud = S
         self.est = E
 
     def __str__(self):
+        return self.nord, self.ouest, self.sud, self.est
+
+
+class Labyrinthe:
+    def __init__(self, height=2, width=2):
+        self.height = height
+        self.width = width
+        self.cells = []
+        for i in range(self.height):
+            self.cells.append([])
+            for j in range(self.width):
+                self.cells[i].append(Cell(i + j))
+
+    def __str__(self):
+
         return
+
+    def affiche(self):
+        temp_lab = []
+        for i in range(self.height):
+            temp_lab.append([])
+            for j in range(self.width):
+                temp_lab[i].append(self.cells[i - 1][j - 1].__str__())
+        return temp_lab
+
+
+laby = Labyrinthe()
+print(*laby.affiche(), sep='\n')
 
 
 def maze_gen(width=4, height=4):
@@ -45,7 +73,7 @@ def maze_gen(width=4, height=4):
     else:
         maze[height - 1][yStart] = {'F': {'N': True,
                                           'S': False, 'W': True, 'E': True}}
-    print(*maze, sep='\n')
+    #print(*maze, sep='\n')
 
     return maze_keys(maze)
 
@@ -76,4 +104,4 @@ width = 10
 height = 10
 
 
-print(*maze_gen(width, height), sep='\n')
+#print(*maze_gen(width, height), sep='\n')
