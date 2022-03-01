@@ -238,6 +238,5 @@ def creation_laby(laby, depart):
 
 
 laby = Labyrinthe(10, 10)
-print(laby.affiche())
 print(laby)
 print(laby.affiche())
