@@ -1,16 +1,106 @@
-from random import randint
+import random
 
 
-class Cell:
-    def __init__(self, value, N=False, O=False, S=False, E=False):
-        self.value = value
-        self.nord = N
-        self.ouest = O
-        self.sud = S
-        self.est = E
+class Pile():
+    def __init__(self):
+        self.pile =[]
+    
+    def empiler(self, valeur):
+        self.pile.append(valeur)
+
+    def depiler(self):
+        val = self.pile.pop()
+        return val
+
+    def sommet_pile(self):
+        return self.pile[-1]
+
+    def longueur(self):
+        return len(self.pile)
+
+    def est_vide(self):
+        return len(self.pile) == 0
+
+    def est_present(self, val):
+        return val in self.pile
+
+class Case:
+    def __init__(self, Posn, Posm, Nord = 1, Ouest = 1, Sud = 1, Est = 1, Exploree = 0):
+        self.posn = Posn
+        self.posm = Posm
+        self.n = Nord
+        self.o = Ouest
+        self.s = Sud
+        self.e = Est
+        self.exploree = Exploree
+
+    def setNord(self, valeur):
+        self.n = valeur
+
+    def setOuest(self, valeur):
+        self.o = valeur
+
+    def setSud(self, valeur):
+        self.s = valeur
+
+    def setEst(self, valeur):
+        self.e = valeur
+    
+    def getExploree(self):
+        return self.exploree
+    
+    def setExploree(self, valeur):
+        self.exploree = valeur
 
     def __str__(self):
-        return self.nord, self.ouest, self.sud, self.est
+        str = f"Case{self.posn, self.posm, self.n, self.o, self.s, self.e}"
+        return str
+
+    def voisinNord(self, laby):
+        if self.posn == 0:
+            return None
+        else:
+            return laby[self.posn - 1][self.posm]
+    
+    def voisinOuest(self, laby):
+        if self.posm == 0:
+            return None
+        else:
+            return laby[self.posn][self.posm - 1]
+
+    def voisinSud(self, laby):
+        if self.posn == (len(laby) - 1):
+            return None
+        else:
+            return laby[self.posn + 1][self.posm]
+
+    def voisinEst(self, laby):
+        if self.posm == (len(laby[self.posn]) - 1):
+            return None
+        else:
+            return laby[self.posn][self.posm + 1]
+    
+    def voisins(self, laby):
+        liste_voisins = []
+        if self.voisinNord(laby) != None:
+            liste_voisins.append(self.voisinNord(laby))
+        if self.voisinOuest(laby) != None:
+            liste_voisins.append(self.voisinOuest(laby))
+        if self.voisinSud(laby) != None:
+            liste_voisins.append(self.voisinSud(laby))
+        if self.voisinEst(laby) != None:
+            liste_voisins.append(self.voisinEst(laby))
+        return liste_voisins
+    
+    def est_bloque(self, laby):
+        tmp = 0
+        for i in self.voisins(laby):
+            if i.getExploree() == 1:
+                tmp += 1
+        if tmp == len(self.voisins(laby)):
+            return True 
+        else:
+            return False
 
 
 class Labyrinthe:
@@ -18,90 +108,96 @@ class Labyrinthe:
         self.height = height
         self.width = width
         self.cells = []
-        for i in range(self.height):
+        for i in range(0,self.height):
             self.cells.append([])
-            for j in range(self.width):
-                self.cells[i].append(Cell(i + j))
+            for j in range(0, self.width):
+                self.cells[i].append(Case(i, j))
+        creation_laby(self, self.cells[0][0])
 
     def __str__(self):
-
-        return
+        pass
+    
+    def get_case(self,i ,j):
+        return self.cells[i][j]
 
     def affiche(self):
         temp_lab = []
-        for i in range(self.height):
+        for i in range(0, self.height):
             temp_lab.append([])
-            for j in range(self.width):
-                temp_lab[i].append(self.cells[i - 1][j - 1].__str__())
+            for j in range(0, self.width):
+                temp_lab[i].append(self.cells[i][j].__str__())
         return temp_lab
+    
+    def casser_murs(self, depart):
+        mur_a_casser = random.randint(1, 4)
+        if mur_a_casser == 1:
+            res = depart.voisinNord(self.cells)
+            if res == None or res.exploree == 1 and self.toutes_explorees() is False:
+                self.casser_murs(depart)
+            else:
+                depart.setNord(0)
+                res.setSud(0)
+        elif mur_a_casser == 2:
+            res = depart.voisinOuest(self.cells)
+            if res == None or res.exploree == 1 and self.toutes_explorees() is False:
+                self.casser_murs(depart)
+            else:
+                depart.setOuest(0)
+                res.setEst(0)
+        elif mur_a_casser == 3:
+            res = depart.voisinSud(self.cells)
+            if res == None or res.exploree == 1 and self.toutes_explorees() is False:
+                self.casser_murs(depart)
+            else:
+                depart.setSud(0)
+                res.setNord(0)
+        else:
+            res = depart.voisinEst(self.cells)
+            if res == None or res.exploree == 1 and self.toutes_explorees() is False:
+                self.casser_murs(depart)
+            else:
+                depart.setEst(0)
+                res.setOuest(0)
+            
+    def toutes_explorees(self):
+        for tab in self.cells:
+            for case in tab:
+                if case.getExploree() == 0:
+                    return False       
+        return True
 
 
-laby = Labyrinthe()
-print(*laby.affiche(), sep='\n')
+def creation_laby(laby, depart):
+    visites = []
+    fermes = []
+    p = Pile()
+    visites.append(depart)
+    p.empiler(depart)
+    while not p.est_vide():
+        temp = p.sommet_pile()
+        voisin = []
+        print(temp)
+
+        for i in temp.voisins(laby.cells):
+            if i not in visites and p.est_present(i) is False:
+                voisin.append(i)
+            
+        if voisin != []:
+            v = random.choice(voisin)
+            if v.est_bloque(laby.cells) == True:
+                pass
+            else:  
+                laby.casser_murs(v)
+            visites.append(v)
+            v.setExploree(1)
+            p.empiler(v)
+        else:
+            fermes.append(temp)
+            p.depiler()
+            
+
+laby = Labyrinthe(4, 4)
+print(laby.affiche())
 
 
-def maze_gen(width=4, height=4):
-    """
-    Fonctions de générateur de labyrinthe 
-    Paramètres : 
-        - width(int) : correspond à la largeur du labyrinthe
-        - height(int) : correspond à la hauteur du labyrinthe
-    Returns :
-        - 
-    """
 
-    maze = []
-    for i in range(height):
-        maze.append([])
-        for j in range(width):
-            # North,South,West,East correspond au endroit ou il y a des murs
-            maze[i].append({'A': {'N': True, 'S': True, 'W': True, 'E': True}})
-
-    # Placement du début
-    xStart = randint(0, height - 2)
-    yStart = randint(0, width - 2)
-    if xStart > 0:
-        maze[xStart][0] = {'D': {'N': True, 'S': True, 'W': False, 'E': True}}
-    else:
-        maze[0][yStart] = {'D': {'N': False, 'S': True, 'W': True, 'E': True}}
-    # Placement du début
-    xStart = randint(1, height - 1)
-    yStart = randint(1, width - 1)
-    if xStart > 0:
-        maze[xStart][width - 1] = {'F': {'N': True,
-                                         'S': True, 'W': True, 'E': False}}
-    else:
-        maze[height - 1][yStart] = {'F': {'N': True,
-                                          'S': False, 'W': True, 'E': True}}
-    #print(*maze, sep='\n')
-
-    return maze_keys(maze)
-
-
-def maze_keys(maze):
-    """
-    Fonctions pour avoir un rendu des clés du labyrinthe
-    Paramètres:
-        maze (list): tableau du labyrinthe avec le dictionnaire des murs 
-
-    Returns:
-        maze_keys (list): tableau des clés des dictionnaires seulement
-    """
-    maze_keys = []
-
-    for i in range(0, len(maze)):
-        list = maze[i]
-        maze_keys.append([])
-        for dict in list:
-            keys = dict.keys()
-            for key in keys:
-                maze_keys[i].append(key)
-
-    return maze_keys
-
-
-width = 10
-height = 10
-
-
-#print(*maze_gen(width, height), sep='\n')
