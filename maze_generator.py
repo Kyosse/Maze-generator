@@ -3,8 +3,8 @@ import random
 
 class Pile():
     def __init__(self):
-        self.pile =[]
-    
+        self.pile = []
+
     def empiler(self, valeur):
         self.pile.append(valeur)
 
@@ -24,8 +24,9 @@ class Pile():
     def est_present(self, val):
         return val in self.pile
 
+
 class Case:
-    def __init__(self, Posn, Posm, Nord = 1, Ouest = 1, Sud = 1, Est = 1, Exploree = 0):
+    def __init__(self, Posn, Posm, Nord=1, Ouest=1, Sud=1, Est=1, Exploree=0):
         self.posn = Posn
         self.posm = Posm
         self.n = Nord
@@ -45,12 +46,24 @@ class Case:
 
     def setEst(self, valeur):
         self.e = valeur
-    
-    def getExploree(self):
-        return self.exploree
-    
+
     def setExploree(self, valeur):
         self.exploree = valeur
+
+    def getNord(self):
+        return self.n
+
+    def getOuest(self):
+        return self.o
+
+    def getSud(self):
+        return self.s
+
+    def getEst(self):
+        return self.e
+
+    def getExploree(self):
+        return self.exploree
 
     def __str__(self):
         str = f"Case{self.posn, self.posm, self.n, self.o, self.s, self.e}"
@@ -61,7 +74,7 @@ class Case:
             return None
         else:
             return laby[self.posn - 1][self.posm]
-    
+
     def voisinOuest(self, laby):
         if self.posm == 0:
             return None
@@ -79,7 +92,7 @@ class Case:
             return None
         else:
             return laby[self.posn][self.posm + 1]
-    
+
     def voisins(self, laby):
         liste_voisins = []
         if self.voisinNord(laby) != None:
@@ -91,14 +104,14 @@ class Case:
         if self.voisinEst(laby) != None:
             liste_voisins.append(self.voisinEst(laby))
         return liste_voisins
-    
+
     def est_bloque(self, laby):
         tmp = 0
         for i in self.voisins(laby):
             if i.getExploree() == 1:
                 tmp += 1
         if tmp == len(self.voisins(laby)):
-            return True 
+            return True
         else:
             return False
 
@@ -108,16 +121,45 @@ class Labyrinthe:
         self.height = height
         self.width = width
         self.cells = []
-        for i in range(0,self.height):
+        for i in range(0, self.height):
             self.cells.append([])
             for j in range(0, self.width):
                 self.cells[i].append(Case(i, j))
         creation_laby(self, self.cells[0][0])
 
     def __str__(self):
-        pass
-    
-    def get_case(self,i ,j):
+        print('__' * (self.width * 2))
+        for i in range(self.height):
+            up = ''
+            down = ''
+            for j in range(self.width):
+                str_up = ''
+                str_down = ''
+                ouest = self.cells[i][j].getOuest()
+                nord = self.cells[i][j].getNord()
+                est = self.cells[i][j].getEst()
+                sud = self.cells[i][j].getSud()
+
+                if ouest == 1:
+                    str_down += '|'
+                else:
+                    str_down += ' '
+                if sud == 1:
+                    str_down += '__'
+                else:
+                    str_down += '  '
+                if est == 1:
+                    str_down += '|'
+                else:
+                    str_down += ' '
+
+                # up += str_up
+                down += str_down
+            # print(up)
+            print(down)
+        return ''
+
+    def get_case(self, i, j):
         return self.cells[i][j]
 
     def affiche(self):
@@ -127,7 +169,7 @@ class Labyrinthe:
             for j in range(0, self.width):
                 temp_lab[i].append(self.cells[i][j].__str__())
         return temp_lab
-    
+
     def casser_murs(self, depart):
         mur_a_casser = random.randint(1, 4)
         if mur_a_casser == 1:
@@ -158,12 +200,12 @@ class Labyrinthe:
             else:
                 depart.setEst(0)
                 res.setOuest(0)
-            
+
     def toutes_explorees(self):
         for tab in self.cells:
             for case in tab:
                 if case.getExploree() == 0:
-                    return False       
+                    return False
         return True
 
 
@@ -176,17 +218,16 @@ def creation_laby(laby, depart):
     while not p.est_vide():
         temp = p.sommet_pile()
         voisin = []
-        print(temp)
 
         for i in temp.voisins(laby.cells):
             if i not in visites and p.est_present(i) is False:
                 voisin.append(i)
-            
+
         if voisin != []:
             v = random.choice(voisin)
             if v.est_bloque(laby.cells) == True:
                 pass
-            else:  
+            else:
                 laby.casser_murs(v)
             visites.append(v)
             v.setExploree(1)
@@ -194,10 +235,9 @@ def creation_laby(laby, depart):
         else:
             fermes.append(temp)
             p.depiler()
-            
 
-laby = Labyrinthe(4, 4)
+
+laby = Labyrinthe(10, 10)
 print(laby.affiche())
-
-
-
+print(laby)
+print(laby.affiche())
