@@ -320,14 +320,16 @@ class Labyrinthe:
 
 
 def laby_web(longueur, largeur, val_dep, val_arrivee):
-    laby = Labyrinthe(longueur, largeur)
-    laby.entree_sortie(val_dep, 0, "Ouest")
-    laby.entree_sortie(val_arrivee, len(largeur), "Est")
+    laby = Labyrinthe(int(longueur), int(largeur))
+    laby.entree_sortie(int(val_dep), 0, "Ouest")
+    laby.entree_sortie(int(val_arrivee), int(largeur) - 1, "Est")
     laby.write_svg("website/static/images/maze_web.svg")
     return laby.get_visuel()
 
 
+"""
 laby = Labyrinthe(10, 10)
 print(laby)
 laby.write_svg("maze.svg")
 print(laby.affiche_valeur())
+"""
