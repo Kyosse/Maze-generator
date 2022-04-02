@@ -1,0 +1,10 @@
+{% extends "base.html" %} {% block title %}Name of the scan{% endblock %}
+{%block content %}
+<div class="">
+  <img
+    class="img-fluid"
+    src="{{url_for('static',filename = 'images/maze_web.svg')}}"
+    width="250px"
+  />
+</div>
+{% endblock %}

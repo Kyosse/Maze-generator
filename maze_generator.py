@@ -83,8 +83,7 @@ class Case:
         return self.posm
 
     def __str__(self):
-        str = f"Case{self.posn, self.posm, self.n, self.o, self.s, self.e}"
-        return str
+        return f"Case{self.posn, self.posm, self.n, self.o, self.s, self.e}"
 
     def voisinNord(self, laby):
         """Méthode qui renvoie le voisin, dans la direction voulu, de la case
@@ -94,7 +93,7 @@ class Case:
 
         Returns:
             None: La case ne comporte pas de voisin
-            Case(obj): La case de la direction voulu 
+            Case(obj): La case de la direction voulu
         """
         if self.posn == 0:  # Si la coordonnée x est égale à 0 alors la case est "collée" au bord donc elle n'a pas de voisin
             return None
@@ -109,7 +108,7 @@ class Case:
 
         Returns:
             None: La case ne comporte pas de voisin
-            Case(obj): La case de la direction voulu 
+            Case(obj): La case de la direction voulu
         """
         if self.posm == 0:  # Si la coordonnée y est égale à 0 alors la case est "collée" au bord donc elle n'a pas de voisin
             return None
@@ -124,7 +123,7 @@ class Case:
 
         Returns:
             None: La case ne comporte pas de voisin
-            Case(obj): La case de la direction voulu 
+            Case(obj): La case de la direction voulu
         """
         if self.posn == (len(laby) - 1):  # Si la coordonnée x est égale à la longeur du labyrinthe alors la case est "collée" au bord donc elle n'a pas de voisin
             return None
@@ -139,7 +138,7 @@ class Case:
 
         Returns:
             None: La case ne comporte pas de voisin
-            Case(obj): La case de la direction voulu 
+            Case(obj): La case de la direction voulu
         """
         if self.posm == (len(laby[self.posn]) - 1):  # Si la coordonnée y est égale à la longeur du labyrinthe alors la case est "collée" au bord donc elle n'a pas de voisin
             return None
@@ -172,21 +171,47 @@ class Labyrinthe:
         self.height = height
         self.width = width
         self.cells = []
+        self.toutes_lignes = []
         for i in range(0, self.height):
             self.cells.append([])
             for j in range(0, self.width):
                 self.cells[i].append(Case(i, j))
-        creation_laby(self, self.cells[0][0])
+        self.creation_laby(self.cells[0][0])
 
-    def __str__(self):
-        print('__' * (self.width * 2))
+    def entree_sortie(self, x, y, direction):
+        case = self.cells[x][y]
+        if direction == "Ouest":
+            case.setOuest(0)
+        else:
+            case.setEst(0)
+
+    def creation_laby(self, depart):
+        visites = []
+        p = Pile()
+        visites.append(depart)
+        p.empiler(depart)
+        while not p.est_vide():
+            temp = p.sommet_pile()
+            voisin = []
+            for i in temp.voisins(self.cells):
+                if i not in visites and p.est_present(i) is False:
+                    voisin.append(i)
+            if voisin != []:
+                v = random.choice(voisin)
+                self.connect(temp, v)
+                visites.append(v)
+                v.setExploree(1)
+                p.empiler(v)
+            else:
+                p.depiler()
+
+    def get_visuel(self):
+        self.toutes_lignes.append('___' * (self.width))
         for i in range(self.height):
             ligne = ''
             for j in range(self.width):
                 str = ''
                 ouest = self.cells[i][j].getOuest()
-                nord = self.cells[i][j].getNord()
-                est = self.cells[i][j].getEst()
                 sud = self.cells[i][j].getSud()
 
                 if ouest == 1:
@@ -197,24 +222,24 @@ class Labyrinthe:
                     str += '__'
                 else:
                     str += '  '
-                if est == 1:
-                    str += '|'
-                else:
-                    str += ' '
                 ligne += str
+            ligne += '|'
+            self.toutes_lignes.append(ligne)
+        return self.toutes_lignes
+
+    def __str__(self):
+        self.get_visuel()
+        for ligne in self.toutes_lignes:
             print(ligne)
         return ''
 
-    def get_case(self, i, j):
-        return self.cells[i][j]
-
-    def affiche(self):
-        temp_lab = []
+    def affiche_valeur(self):
+        temp_laby = []
         for i in range(0, self.height):
-            temp_lab.append([])
+            temp_laby.append([])
             for j in range(0, self.width):
-                temp_lab[i].append(self.cells[i][j].__str__())
-        return temp_lab
+                temp_laby[i].append(self.cells[i][j].__str__())
+        return temp_laby
 
     def connect(self, case_depart, case_voisin):
         x = case_voisin.getPosn() - case_depart.getPosn()
@@ -233,28 +258,76 @@ class Labyrinthe:
             case_depart.setEst(0)
             case_voisin.setOuest(0)
 
+    def write_svg(self, filename):
+        """Write an SVG image of the maze to filename."""
 
-def creation_laby(laby, depart):
-    visites = []
-    p = Pile()
-    visites.append(depart)
-    p.empiler(depart)
-    while not p.est_vide():
-        temp = p.sommet_pile()
-        voisin = []
-        for i in temp.voisins(laby.cells):
-            if i not in visites and p.est_present(i) is False:
-                voisin.append(i)
-        if voisin != []:
-            v = random.choice(voisin)
-            laby.connect(temp, v)
-            visites.append(v)
-            v.setExploree(1)
-            p.empiler(v)
-        else:
-            p.depiler()
+        aspect_ratio = self.height / self.width
+        # Pad the maze all around by this amount.
+        padding = 10
+        # Height and width of the maze image (excluding padding), in pixels
+        height = 500
+        width = int(height * aspect_ratio)
+        # Scaling factors mapping maze coordinates to image coordinates
+        scy, scx = height / self.width, width / self.height
+
+        def write_wall(ww_f, ww_x1, ww_y1, ww_x2, ww_y2):
+            """Write a single wall to the SVG image file handle f."""
+
+            print('<line x1="{}" y1="{}" x2="{}" y2="{}"/>'
+                  .format(ww_x1, ww_y1, ww_x2, ww_y2), file=ww_f)
+
+        # Write the SVG image file for maze
+        with open(filename, 'w') as f:
+            # SVG preamble and styles.
+            print('<?xml version="1.0" encoding="utf-8"?>', file=f)
+            print('<svg xmlns="http://www.w3.org/2000/svg"', file=f)
+            print('    xmlns:xlink="http://www.w3.org/1999/xlink"', file=f)
+            print('    width="{:d}" height="{:d}" viewBox="{} {} {} {}">'
+                  .format(width + 2 * padding, height + 2 * padding,
+                          -padding, -padding, width + 2 * padding, height + 2 * padding),
+                  file=f)
+            print('<defs>\n<style type="text/css"><![CDATA[', file=f)
+            print('line {', file=f)
+            print('    stroke: #000000;\n    stroke-linecap: square;', file=f)
+            print('    stroke-width: 5;\n}', file=f)
+            print(']]></style>\n</defs>', file=f)
+            # Draw the "South" and "East" walls of each cell, if present (these
+            # are the "North" and "West" walls of a neighbouring cell in
+            # general, of course).
+
+            for x in range(self.height):
+                for y in range(self.width):
+
+                    if self.cells[x][y].getEst() == 1:
+
+                        x1 = x * scx
+                        y1 = (y + 1) * scy
+                        x2 = (x + 1) * scx
+                        y2 = (y + 1) * scy
+                        write_wall(f, x1, y1, x2, y2)
+
+                    if self.cells[x][y].getSud() == 1:
+
+                        x1, y1, x2, y2 = (x + 1) * scx, y * \
+                            scy, (x + 1) * scx, (y + 1) * scy
+                        write_wall(f, x1, y1, x2, y2)
+
+            # Draw the North and West maze border, which won't have been drawn
+            # by the procedure above.
+            print('<line x1="0" y1="0" x2="{}" y2="0"/>'.format(width), file=f)
+            print('<line x1="0" y1="0" x2="0" y2="{}"/>'.format(height), file=f)
+            print('</svg>', file=f)
 
 
-laby = Labyrinthe(10, 5)
+def laby_web(longueur, largeur, val_dep, val_arrivee):
+    laby = Labyrinthe(longueur, largeur)
+    laby.entree_sortie(val_dep, 0, "Ouest")
+    laby.entree_sortie(val_arrivee, len(largeur), "Est")
+    laby.write_svg("website/static/images/maze_web.svg")
+    return laby.get_visuel()
+
+
+laby = Labyrinthe(10, 10)
 print(laby)
-print(laby.affiche())
+laby.write_svg("maze.svg")
+print(laby.affiche_valeur())

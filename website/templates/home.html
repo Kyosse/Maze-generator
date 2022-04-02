@@ -1,0 +1,104 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content%}
+
+
+<a href="website/static/images/maze_web.svg" download="Labyrinthe.jpg"><i class="fa fa-solid fa-download color-icon text-center text-warning"></i></a>
+<div class="contenair-fluid p-5 my-4 rounded-3 bg-dark text-white">
+  <h2 class="mb-4 fw-bold text-center">
+    <i class="fab fa-hotjar color-icon text-center text-warning"></i> Labyrinthe
+  </h2>
+  <div class="progress">
+    <div
+      class="progress-bar progress-bar-striped bg-warning"
+      role="progressbar"
+      style="width: 75%"
+      aria-valuenow="75"
+      aria-valuemin="0"
+      aria-valuemax="100"
+    ></div>
+  </div>
+  <div class="btn-group">
+    <button
+      type="button"
+      class="btn btn-warning dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-expanded="false"
+      
+    >
+      Définir départ/arrivée
+    </button>
+    <ul class="dropdown-menu bg-warning text-black">
+      
+      <li><button
+        type="button"
+        class="btn btn-warning"
+        onclick="toggle_display_depart()"
+      >
+        Départ
+      </button></li>
+      
+      <li><button
+        type="button"
+        class="btn btn-warning"
+        onclick="toggle_display_arrivee()"
+      >
+        Arrivée
+      </button></li>
+    </ul>
+  </div>
+  <br />
+  <div class="depart-input" >
+  <label class="form-label">Coordonnées X</label>
+<div class="range">
+  <input
+  
+      type="range"
+      class="form-range"
+      min="0"
+      max="500"
+      id="valeur_depart"
+      value="0"
+      onchange="updateTextInput(this.value);"
+  />
+  
+</div>
+  </div>
+  <div class="arrivee-input" >
+    <label class="form-label">Coordonnées Y</label>
+  </br>
+  
+    <input
+      type="range"
+      class="form-range"
+      min="0"
+      max="10"
+      id="valeur_arrivee"
+      value="0"
+      
+    />
+   
+  </div>
+    <div class=" form-group">
+      <div class="position-relative">
+        <form method="POST">
+         
+          
+           
+          <input type="text" pattern="[0-9]*" placeholder="nombre seulement" />
+           
+          <div class="position-absolute pt-5 start-50 translate-middle">
+            <button type="submit" class="btn btn-outline-warning">gang</button>
+          </div>
+        </form>
+
+        
+      </div>
+    </div>
+  </div>
+  <script>
+    depart = document.querySelector(".depart-input");
+    arrivee = document.querySelector(".arrivee-input");
+    arrivee.style.display = "none";
+    depart.style.display = "none";
+  </script>
+  {% endblock %}
+</div>
