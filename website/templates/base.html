@@ -24,53 +24,10 @@
       integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
       crossorigin="anonymous"
     ></script>
-    <style>
-      .form-range::-moz-range-thumb {
-        width: 1rem;
-        height: 1rem;
-        background-color: #ffc107;
-        border: 0;
-        border-radius: 1rem;
-        -moz-transition: background-color 0.15s ease-in-out,
-          border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-        transition: background-color 0.15s ease-in-out,
-          border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-        -moz-appearance: none;
-        appearance: none;
-      }
-      .form-range::-moz-range-thumb:active {
-        background-color: #ffc107;
-      }
-      .form-range::-webkit-slider-thumb {
-        width: 1rem;
-        height: 1rem;
-        margin-top: -0.25rem;
-        background-color: #ffc107;
-        border: 0;
-        border-radius: 1rem;
-        -webkit-transition: background-color 0.15s ease-in-out,
-          border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-        transition: background-color 0.15s ease-in-out,
-          border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-        -webkit-appearance: none;
-        appearance: none;
-      }
-      .form-check-input[type="checkbox"]:indeterminate {
-        background-color: #ffc107;
-        border-color: #ffc107;
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10h8'/%3e%3c/svg%3e");
-      }
-      .form-check-input:focus {
-        border-color: #ffc107;
-        outline: 0;
-        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-      }
-      .form-check-input:checked {
-        background-color: #ffc107;
-        border-color: #ffc107;
-      }
-    </style>
-    <link rel="stylesheet" href="/static/style.css" />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename = 'style.css')}}"
+    />
     <title>{% block title %}Base{% endblock %}</title>
   </head>
 
@@ -83,7 +40,7 @@
               class="navbar-toggler-icon"
               src="/static/images/logo.png"
               alt="Logo"
-              width="25px"
+              width="50px"
             />
           </div>
           <button
@@ -104,7 +61,7 @@
               </li>
               <li class="nav-item">
                 <a class="nav-link text-warning" id="name" href="/">
-                  <strong>Menu</strong>
+                  <strong>Acceuil</strong>
                 </a>
               </li>
             </ul>
@@ -112,15 +69,17 @@
         </div>
       </nav>
     </header>
-
-    {% with messages = get_flashed_messages(with_categories=true) %} {% if
-    messages %} {% for category, message in messages %} {% if category ==
-    'error' %}
-    <div class="alert alert-danger alert-dimissible" role="alert">
+    <!-- Intégration de python grâce a jinja2 directement implémenté dans Flask -->
+    <!-- Mise en forme du message envoyer par flash() -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    {% if category == 'error' %}
+    <div class="alert alert-info alert-dimissible" role="alert">
       {{ message }}
       <button
         type="button"
-        class="btn-close btn-close-white"
+        class="btn-close"
         aria-label="Close"
         data-bs-dismiss="alert"
       >
@@ -132,7 +91,7 @@
       {{ message }}
       <button
         type="button"
-        class="btn-close btn-close-white"
+        class="btn-close"
         aria-label="Close"
         data-bs-dismiss="alert"
       ></button>
@@ -141,20 +100,22 @@
 
     <div class="container">{% block content %} {% endblock %}</div>
     <script>
-      function toggle_display_depart() {
-        arrivee = document.querySelector(".arrivee-input");
-        depart = document.querySelector(".depart-input");
-        if (depart.style.display == "none") {
-          depart.style.display = "block";
-          arrivee.style.display = "none";
+      // fonction javascript pour gérer l'affichage des inputs d'entrée et de sortie
+      function toggle_display_entree() {
+        sortie = document.querySelector(".sortie-input"); // On récupère la balise class 'sortie-input'
+        entree = document.querySelector(".entree-input"); // On récupère la balise class 'entree-input'
+        if (entree.style.display == "none") { // Si la balise 'entree-input' est non-affichée alors
+          entree.style.display = "block"; // On l'affiche
+          sortie.style.display = "none"; // Et on enlève la balise 'sortie-input'
         }
-      }
-      function toggle_display_arrivee() {
-        arrivee = document.querySelector(".arrivee-input");
-        depart = document.querySelector(".depart-input");
-        if (arrivee.style.display == "none") {
-          arrivee.style.display = "block";
-          depart.style.display = "none";
+      };
+      // fonction javascript pour gérer l'affichage des inputs d'entrée et de sortie
+      function toggle_display_sortie() {
+        sortie = document.querySelector(".sortie-input"); // On récupère la balise class 'sortie-input'
+        entree = document.querySelector(".entree-input"); // On récupère la balise class 'entree-input'
+        if (sortie.style.display == "none") { // Si la balise 'sortie-input' est non-affichée alors
+          sortie.style.display = "block"; // On l'affiche
+          entree.style.display = "none"; // Et on enlève la balise 'entree-input'
         }
       }
     </script>

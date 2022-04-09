@@ -1,12 +1,12 @@
 {% extends "base.html" %} {% block title %}Home{% endblock %} {% block content%}
 
-<div class="contenair-fluid p-5 my-4 rounded-3 bg-dark text-white">
+<div class="contenair-fluid shadow-lg bg-dark p-5 my-5 rounded-3 text-white">
   <h2 class="mb-4 fw-bold text-center">
     <i class="fab fa-hotjar color-icon text-center text-warning"></i> Labyrinthe
   </h2>
   <div class="progress" style="height: 20px">
     <div
-      class="progress-bar progress-bar-striped bg-warning progress-bar-animated"
+      class="progress-bar shadow-lg bg-warning progress-bar-striped progress-bar-animated"
       role="progressbar"
       id="progressbar"
       style="width: 0%"
@@ -22,25 +22,29 @@
           Pour générer le labyrinthe il suffit de sélectionner la longueur ainsi
           que la largeur. Puis de sélectionner le départ et l'arrivée.
         </p>
+
         <label class="form-label">
-          Longueur (minimum: 4 / recommandé: 20) | Valeur :
+          Longueur (minimum: 4 / recommandé: 45) | Valeur :
         </label>
         <span class="p-2" id="val-longueur-affichage">4</span>
+        <!-- La longueur maximale est 70 car après l'image du fichier SVG deviens illisible -->
         <input
           type="range"
           class="form-range"
           min="4"
-          max="100"
+          max="70"
           id="valeur-longueur"
           value="4"
           name="valeur-longueur"
-          onInput="document.getElementById('val-longueur-affichage').innerText =
-                  document.getElementById('valeur-longueur').value; val =
-                  document.getElementById('valeur-longueur').value / 4 +
-                  (document.getElementById('valeur-largeur').value / 4);
-                  document.getElementById('progressbar').style = 'width: '+val+'%';
-                  document.getElementById('valeur-depart').setAttribute('max', document.getElementById('valeur-longueur').value);
-                  document.getElementById('valeur-arrivee').setAttribute('max', document.getElementById('valeur-longueur').value);"
+          onInput="
+            // Change la valeur affichée par la valeur actuelle de l'input
+            document.getElementById('val-longueur-affichage').innerText = document.getElementById('valeur-longueur').value; 
+            // Ajoute un pourcentage à la bar de progression en fonction de la valeur de l'input
+            val = document.getElementById('valeur-longueur').value / 2.8 + document.getElementById('valeur-largeur').value / 2.8;
+            document.getElementById('progressbar').style = 'width: '+val+'%';
+            // Modifie le choix possible pour l'entrée et la sortie en fonction de la longueur en modifiant le maximum de l'input
+            document.getElementById('valeur-entree').setAttribute('max', (document.getElementById('valeur-longueur').value - 1));
+            document.getElementById('valeur-sortie').setAttribute('max', (document.getElementById('valeur-longueur').value - 1));"
         />
         <div class="form-check form-switch">
           <input
@@ -49,6 +53,7 @@
             role="switch"
             name="aleatoire-longueur"
             id="aleatoire-longueur"
+            onClick="toggle_switch()"
           />
           <label class="form-check-label" for="aleatoire-longueur"
             >Aléatoire</label
@@ -57,20 +62,24 @@
       </div>
       <div class="largeur-input">
         <label class="form-label">
-          Largeur (minimum: 4 / recommandé: 20) | Valeur :
+          Largeur (minimum: 4 / recommandé: 45) | Valeur :
         </label>
         <span class="p-2" id="val-largeur-affichage">4</span>
+        <!-- La largeur maximale est 70 car après l'image du fichier SVG deviens illisible -->
         <input
           type="range"
           class="form-range"
           min="4"
-          max="100"
+          max="70"
           id="valeur-largeur"
           name="valeur-largeur"
           value="4"
-          onInput="document.getElementById('val-largeur-affichage').innerText = document.getElementById('valeur-largeur').value;
-                  val = (document.getElementById('valeur-largeur').value / 4) + (document.getElementById('valeur-longueur').value / 4);
-                  document.getElementById('progressbar').style = 'width: '+val+'%';"
+          onInput="
+            // Change la valeur affichée par la valeur actuelle de l'input
+            document.getElementById('val-largeur-affichage').innerText = document.getElementById('valeur-largeur').value;
+            // Ajoute un pourcentage à la bar de progression en fonction de la valeur de l'input
+            val = (document.getElementById('valeur-largeur').value / 4) + (document.getElementById('valeur-longueur').value / 4);
+            document.getElementById('progressbar').style = 'width: '+val+'%';"
         />
         <div class="form-check form-switch">
           <input
@@ -86,8 +95,8 @@
         </div>
       </div>
       <p class="mb-1 pt-3 fw-bold">
-        En sélectionnant le départ et l'arrivée vous choisissez l'emplacement
-        sur les cotés de ceux-ci (maximum : longueur).
+        En sélectionnant l'entrée et la sortie vous choisissez l'emplacement sur
+        les cotés de ceux-ci (maximum : longueur).
       </p>
       <div class="btn-group pt-3">
         <button
@@ -96,82 +105,92 @@
           data-bs-toggle="dropdown"
           aria-expanded="false"
         >
-          Définir départ/arrivée
+          Définir Entrée/Sortie
         </button>
         <ul class="dropdown-menu bg-warning text-black">
           <li>
             <button
               type="button"
               class="btn btn-warning"
-              onclick="toggle_display_depart();
-                      document.getElementById('progressbar').style = 'width: 60%';"
+              onclick="
+                // Appel de la fonction permettant d'alterner entre sortie et entrée
+                toggle_display_entree();
+                document.getElementById('progressbar').style = 'width: 60%';"
             >
-              Départ
+              Entrée
             </button>
           </li>
           <li>
             <button
               type="button"
               class="btn btn-warning"
-              onclick="toggle_display_arrivee();
-              document.getElementById('progressbar').style = 'width: 70%';"
+              onclick="
+                // Appel de la fonction permettant d'alterner entre sortie et entrée
+                toggle_display_sortie();
+                document.getElementById('progressbar').style = 'width: 70%';"
             >
-              Arrivée
+              Sortie
             </button>
           </li>
         </ul>
       </div>
-      <div class="depart-input">
-        <label class="form-label">Départ | Valeur :</label>
-        <span class="p-2" id="val-depart-affichage">0</span>
+      <div class="entree-input">
+        <label class="form-label">Entrée | Valeur :</label>
+        <span class="p-2" id="val-entree-affichage">0</span>
         <input
           type="range"
           class="form-range"
           min="0"
-          id="valeur-depart"
-          name="valeur-depart"
+          id="valeur-entree"
+          name="valeur-entree"
+          max="3"
           value="0"
-          onInput="document.getElementById('val-depart-affichage').innerText = document.getElementById('valeur-depart').value"
+          onInput="
+            // Change la valeur affichée par la valeur actuelle de l'input
+            document.getElementById('val-entree-affichage').innerText = document.getElementById('valeur-entree').value"
         />
         <div class="form-check form-switch">
           <input
             class="form-check-input"
             type="checkbox"
             role="switch"
-            name="aleatoire-depart"
-            id="aleatoire-depart"
+            name="aleatoire-entree"
+            id="aleatoire-entree"
           />
-          <label class="form-check-label" for="aleatoire-depart"
+          <label class="form-check-label" for="aleatoire-entree"
             >Aléatoire</label
           >
         </div>
       </div>
-      <div class="arrivee-input">
-        <label class="form-label">Arrivée | Valeur :</label>
-        <span class="p-2" id="val-arrivee-affichage">0</span>
+      <div class="sortie-input">
+        <label class="form-label">Sortie | Valeur :</label>
+        <span class="p-2" id="val-sortie-affichage">0</span>
         <input
           type="range"
           class="form-range"
           min="0"
-          id="valeur-arrivee"
-          name="valeur-arrivee"
+          id="valeur-sortie"
+          name="valeur-sortie"
+          max="3"
           value="0"
-          onInput="document.getElementById('val-arrivee-affichage').innerText = document.getElementById('valeur-arrivee').value"
+          onInput="
+            // Change la valeur affichée par la valeur actuelle de l'input
+            document.getElementById('val-sortie-affichage').innerText = document.getElementById('valeur-sortie').value"
         />
         <div class="form-check form-switch">
           <input
             class="form-check-input"
             type="checkbox"
             role="switch"
-            name="aleatoire-arrivee"
-            id="aleatoire-arrivee"
+            name="aleatoire-sortie"
+            id="aleatoire-sortie"
           />
-          <label class="form-check-label" for="aleatoire-arrivee"
+          <label class="form-check-label" for="aleatoire-sortie"
             >Aléatoire</label
           >
         </div>
       </div>
-      <div class="position-absolute pt-5 start-50 translate-middle">
+      <div class="position-absolute pb-3 pt-5 start-50 translate-middle">
         <button type="submit" class="btn btn-outline-warning">
           Générer le Labyrinthe
         </button>
@@ -179,10 +198,32 @@
     </div>
   </form>
   <script>
-    depart = document.querySelector(".depart-input");
-    arrivee = document.querySelector(".arrivee-input");
-    arrivee.style.display = "none";
-    depart.style.display = "none";
+    // Au lancement de la page on cache les balises 'entree-input' et 'sortie-input'
+    entree = document.querySelector(".entree-input");
+    sortie = document.querySelector(".sortie-input");
+    sortie.style.display = "none";
+    entree.style.display = "none";
+    // Fonction pour liéer le bouton aléatoire de la longueur et ceux de l'entrée et de la sortie
+    function toggle_switch() {
+      // Lorsque le bouton aléatoire de la longueur est pressé, si la balise d'id 'aleatoire-sortie'
+      // possède l'attribut 'disabled' alors le bouton aléatoire à déjà été activé et il faut donc
+      // supprimé les attribut 'disabled' et 'checked' pour laisser le choix de l'aléatoire
+      if (
+        document.getElementById("aleatoire-sortie").hasAttribute("disabled") ==
+        true
+      ) {
+        document.getElementById("aleatoire-sortie").removeAttribute("checked");
+        document.getElementById("aleatoire-sortie").removeAttribute("disabled");
+        document.getElementById("aleatoire-entree").removeAttribute("checked");
+        document.getElementById("aleatoire-entree").removeAttribute("disabled");
+      } else {
+        // Sinon le bouton n'a pas été activé avant et il faut donc cocher et verouiller les balises aleatoires
+        document.getElementById("aleatoire-sortie").setAttribute("checked", "");
+        document.getElementById("aleatoire-sortie").setAttribute("disabled", "");
+        document.getElementById("aleatoire-entree").setAttribute("checked", "");
+        document.getElementById("aleatoire-entree").setAttribute("disabled", "");
+      }
+    }
   </script>
 
   {% endblock %}
