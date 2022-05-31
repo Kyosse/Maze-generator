@@ -6,14 +6,14 @@ from random import randint
 # Défini dans Flask views comme repère pour les urls
 views = Blueprint('views', __name__)
 
-# Dans l'url '/' désigne la page d'acceuil
+# Dans l'url, '/' désigne la page d'acceuil
 
 
 # Défini le chemin et les méthodes pour lesquelles la fonction home() est activée
 @views.route('/', methods=['GET', 'POST'])
 def home():
     """
-    Fonction activée à chaque chargement de la page récupérant les informations dans le form de la page html home.html
+    Fonction activée à chaque chargement de la page ayant l'url ci-dessus récupérant les informations dans le form de la page html home.html
 
     Returns:
         Renvoie la page d'acceuil home.html si la requête est un GET
@@ -64,7 +64,7 @@ def home():
     # Sinon si la requête ne contient pas de POST on affiche la page d'acceuil
     return render_template("home.html")
 
-# Dans l'url '/Maze' désigne la page du labyrinthe
+# Dans l'url, '/Maze' désigne la page du labyrinthe
 
 
 # Défini le chemin pour lequel la fonction maze() est activé
