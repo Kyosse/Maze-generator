@@ -99,25 +99,5 @@
     {% endif %} {% endfor %} {% endif %} {% endwith %}
 
     <div class="container">{% block content %} {% endblock %}</div>
-    <script>
-      // fonction javascript pour gérer l'affichage des inputs d'entrée et de sortie
-      function toggle_display_entree() {
-        sortie = document.querySelector(".sortie-input"); // On récupère la balise class 'sortie-input'
-        entree = document.querySelector(".entree-input"); // On récupère la balise class 'entree-input'
-        if (entree.style.display == "none") { // Si la balise 'entree-input' est non-affichée alors
-          entree.style.display = "block"; // On l'affiche
-          sortie.style.display = "none"; // Et on enlève la balise 'sortie-input'
-        }
-      };
-      // fonction javascript pour gérer l'affichage des inputs d'entrée et de sortie
-      function toggle_display_sortie() {
-        sortie = document.querySelector(".sortie-input"); // On récupère la balise class 'sortie-input'
-        entree = document.querySelector(".entree-input"); // On récupère la balise class 'entree-input'
-        if (sortie.style.display == "none") { // Si la balise 'sortie-input' est non-affichée alors
-          sortie.style.display = "block"; // On l'affiche
-          entree.style.display = "none"; // Et on enlève la balise 'entree-input'
-        }
-      }
-    </script>
   </body>
 </html>
